@@ -102,7 +102,7 @@ def refineStats(start_data, new_data, L):
         else:
             d = 0
         value_refined = ((L ** (d + 1)) * new_current.value - start_current.value) / ((L ** (d + 1)) - 1)
-        value_exact = start_current.exactValue
+        value_exact = start_current.exact_value
         refinedStats = MethodData(start_current.name, value_exact, value_refined, None)
         stats.append(refinedStats)
     return stats
