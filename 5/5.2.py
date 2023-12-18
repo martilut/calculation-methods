@@ -5,20 +5,6 @@ import scipy
 from root_approximator.root_approximator import secantMethod, separateRoots
 
 
-def mahler_formula(func, nodes_count):
-    nodes = []
-    for k in range(1, nodes_count + 1):
-        node = math.cos((2 * k - 1) / float(2 * nodes_count) * math.pi)
-        nodes.append(node)
-    coefficients = [math.pi / float(nodes_count) for _ in range(0, nodes_count)]
-    integral = 0
-    for k in range(1, nodes_count + 1):
-        x_k = nodes[k - 1]
-        value = func(x_k)
-        integral += value
-    return nodes, coefficients, coefficients[nodes_count - 1] * integral
-
-
 def legendre_polynoms(degree):
     polynoms = ['1', 'x']
     for n in range(2, degree + 1):
@@ -74,7 +60,7 @@ def gauss_formula(func, nodes_count, a=-1., b=1.):
 
 
 if __name__ == '__main__':
-    print('Задача вычисления интегралов при помощи КФ Гаусса и КФ Мелера')
+    print('Задача вычисления интегралов при помощи КФ Гаусса')
     print()
     print('Вариант 6')
     print('[A, B] = [0, 1]')
@@ -128,42 +114,21 @@ if __name__ == '__main__':
     b = float(input('Введите B: '))
     print()
 
-    for nodes_count in [4, 6, 7, 8]:
-        exact_value = scipy.integrate.quad(func, a, b)[0]
-        nodes, coefficients, gauss_value = gauss_formula(func, nodes_count, a, b)
-        gauss_error = abs(exact_value - gauss_value)
+    to_continue = True
+    while to_continue:
+        nodes_list = input("Введите N_1, N_2, N_3 узлов для вычисления интеграла с помощью КФ Гаусса: ").split(" ")
+        for nodes_count in nodes_list:
+            exact_value = scipy.integrate.quad(func, a, b)[0]
+            nodes, coefficients, gauss_value = gauss_formula(func, int(nodes_count), a, b)
+            gauss_error = abs(exact_value - gauss_value)
 
-        print('N:', nodes_count)
-        print(f"Nodes: {nodes}")
-        print(f"Coefficients: {coefficients}, sum: {sum(coefficients)}")
-        print(f"Exact value: {exact_value}")
-        print(f"Gauss value: {gauss_value}")
-        print(f"Abs error: {gauss_error}")
-        print()
-
-    print("--------------------------------------------")
-    print('Вычисление интеграла функции с помощью КФ Малера')
-    print('f(x) = (cos(x))^2')
-    print('[A, B] = [-1, 1]')
-    print("--------------------------------------------")
-    print()
-
-    n_k_input = input('Введите N1...Nk для КФ Малера: ').split()
-    print()
-
-    nodes_counts = list(map(int, n_k_input))
-    mahler_func = lambda x: (math.cos(x)) ** 2
-
-    int_func = lambda x: mahler_func(x) / math.sqrt(1 - (x ** 2))
-    exact_value = scipy.integrate.quad(int_func, -1, 1)[0]
-
-    for n in nodes_counts:
-        nodes, coefficients, mahler_value = mahler_formula(mahler_func, n)
-        for i in range(0, len(nodes)):
-            print(f"Узел: {nodes[i]}, Коэффициент: {coefficients[i]}")
-        print()
-        print('N =', n)
-        print(f'Полученное значение: {mahler_value}')
-        print(f'Точное значение: {exact_value}')
-        print(f'Абс. погрешность: {abs(exact_value - mahler_value)}')
-        print()
+            print('N:', nodes_count)
+            print(f"Nodes: {nodes}")
+            print(f"Coefficients: {coefficients}, sum: {sum(coefficients)}")
+            print(f"Exact value: {exact_value}")
+            print(f"Gauss value: {gauss_value}")
+            print(f"Abs error: {gauss_error}")
+            print()
+        to_continue_letter = input("Ввести новые значения <a, b>? y/n: ")
+        if to_continue_letter == 'n':
+            to_continue = False

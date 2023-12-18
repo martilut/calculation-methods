@@ -90,27 +90,26 @@ def simpson(func, a, b, step, parts):
     return (step / 6.0) * res
 
 
-def refineStats(start_data, new_data, L):
-    stats = []
+def refine_QF_values(exact_value, start_data, new_data, L):
+    res = []
     for i in range(0, len(start_data)):
-        start_current = start_data[i]
-        new_current = new_data[i]
-        if start_current.name == 'Среднего пр-ка' or start_current.name == 'Трапеции':
+        source = start_data[i]
+        refined = new_data[i]
+        if source.name == 'Center rectangle' or source.name == 'Trapezoid':
             d = 1
-        elif start_current.name == 'Симпсона':
+        elif source.name == 'Simpson':
             d = 3
         else:
             d = 0
-        value_refined = ((L ** (d + 1)) * new_current.value - start_current.value) / ((L ** (d + 1)) - 1)
-        value_exact = start_current.exact_value
-        refinedStats = MethodData(start_current.name, value_exact, value_refined, None)
-        stats.append(refinedStats)
-    return stats
+        value_refined = ((L ** (d + 1)) * refined.value - source.value) / ((L ** (d + 1)) - 1)
+        refined_data = MethodData(source.name, exact_value, value_refined, None)
+        res.append(refined_data)
+    return res
 
 
 if __name__ == '__main__':
     print('Задача приближенного вычисления интеграла по составным квадратурным формулам')
-    print('f(x) = exp(x)')
+    print('f(x) = exp(x), p(x) = 1')
     print()
 
     f = lambda x: math.exp(x)
@@ -173,3 +172,10 @@ if __name__ == '__main__':
     print()
     print('h2 =', steps_new)
     print_calculation_data(data_new)
+    exact_integral = scipy.integrate.quad(func_int, a, b)
+    exact_value = exact_integral[0]
+    print("------------------------------------------------")
+    print("Refined values")
+    print("------------------------------------------------")
+    print_calculation_data(refine_QF_values(exact_value, start_stats, data_new, L))
+
